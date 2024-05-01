@@ -11,4 +11,4 @@ COPY . /app
 RUN pip install websocket-server requests
 
 # Run script.py when the container launches
-CMD ["python", "script.py"]
+CMD ["python", "main.py"]
