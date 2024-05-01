@@ -1,26 +1,14 @@
-FROM python:3-alpine AS builder
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
 
+# Set the working directory in the container
 WORKDIR /app
 
-RUN python3 -m venv venv
-ENV VIRTUAL_ENV=/app/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Install any needed packages specified in requirements.txt
+RUN pip install websocket-server requests
 
-# Stage 2
-FROM python:3-alpine AS runner
-
-ENV VIRTUAL_ENV=/app/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-ENV PORT=8000
-
-WORKDIR /app
-
-COPY --from=builder /app/venv venv
-COPY . .
-
-EXPOSE ${PORT}
-
-CMD gunicorn --bind :${PORT} --workers 2 app:app
+# Run script.py when the container launches
+CMD ["python", "script.py"]
