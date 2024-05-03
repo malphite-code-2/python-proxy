@@ -4,20 +4,24 @@ from websocket_server import WebsocketServer
 import requests
 
 # Load file
-filename = 'https://github.com/Pymmdrza/Rich-Address-Wallet/releases/download/Rich_Bitcoin_Addresses_08_2023/P2PKH.txt'
-response = requests.get(filename)
-response.encoding = "utf-8"
-addresses = set(response.text.split())
+filename = 'rvn.txt'
+with open(filename) as f :
+    addresses = set(f.read().split())
 
 print(f"Loaded {len(addresses)} addresses!")
 
 def handler(client, server, message):
     data = json.loads(message)
+    id = data.get('id')
     method = data.get('method')
-    address = data.get('address')
-    if method == 'scan.wallet-check':
-        status = address in addresses
-        server.send_message(client, msg = json.dumps({"address": address, "status": status}))
+    params = data.get('params')
+    address = params.get('address')
+    coin = params.get('coin')
+
+    if method == 'wallet_wallet_includeRich':
+        if (coin == 'BTC'):
+            status = address in addresses
+            server.send_message(client, msg = json.dumps({"id": id, "address": address, "coin": coin, "status": status}))
             
 
 def new_client(client, server):
